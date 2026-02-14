@@ -1,0 +1,7 @@
+# Light dependencies - no Qiskit. Use for memory-constrained hosts.
+# Optimization uses pure NumPy (classical only). 100% reliable.
+Flask==3.0.0
+gunicorn==21.2.0
+numpy>=1.24.0
+pandas>=2.0.0
+yfinance>=0.2.33

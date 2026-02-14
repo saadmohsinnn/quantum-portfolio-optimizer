@@ -22,7 +22,8 @@ from data_fetcher import (
     PREDEFINED_LISTS,
     AssetData,
 )
-from quantum_optimizer import optimize, OptimizationResult
+from quantum_optimizer import OptimizationResult
+from classical_optimizer import run_classical_numpy
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -138,9 +139,19 @@ def api_optimize():
 
         risk_factor = max(0.01, min(1.0, risk_factor))
 
-        classical, quantum = optimize(
-            mu, sigma, risk_factor, budget, use_quantum=use_quantum, vqe_maxiter=VQE_MAX_ITER
-        )
+        # Use pure NumPy classical optimizer - always works, no Qiskit required
+        classical = run_classical_numpy(mu, sigma, risk_factor, budget)
+
+        quantum = None
+        if use_quantum:
+            try:
+                from quantum_optimizer import run_vqe
+                quantum = run_vqe(
+                    mu, sigma, risk_factor, budget,
+                    maxiter=VQE_MAX_ITER, reps=2
+                )
+            except Exception as e:
+                logger.warning("VQE skipped (fallback to classical only): %s", e)
 
         # Build response with asset names for display
         symbol_list = [a.symbol for a in assets]
@@ -150,6 +161,8 @@ def api_optimize():
             d = r.to_dict()
             d["selectedSymbols"] = [symbol_list[i] for i in r.selected_indices]
             d["selectedNames"] = [name_by_idx.get(i, symbol_list[i]) for i in r.selected_indices]
+            # Sharpe ratio (annualized): (return - risk_free) / volatility; risk_free ≈ 2%
+            d["sharpeRatio"] = (r.expected_return - 0.02) / r.risk if r.risk > 1e-8 else None
             return d
 
         # Objective gap: how close quantum solution is to classical optimum (real metric)

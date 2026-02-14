@@ -1,14 +1,14 @@
 # Render Blueprint: Quantum Playground
-# Deploy at https://dashboard.render.com → New → Blueprint
-# Or connect repo and use "New Web Service" with the same settings below.
+# Uses requirements-light.txt for reliable free-tier deployment (no Qiskit = no OOM).
+# Classical optimization always works. For quantum, switch to requirements.txt and paid plan.
 
 services:
   - type: web
     name: quantum-playground
     env: python
 
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    buildCommand: pip install -r requirements-light.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1
 
     plan: free
 

@@ -395,7 +395,9 @@ async function runOptimization() {
     const timeEl = $("completion-time");
     if (timeEl && q) {
       const sec = (q.computationTimeMs / 1000).toFixed(2);
-      timeEl.textContent = "Quantum simulation completed in " + sec + " seconds.";
+      timeEl.textContent = result.quantum
+        ? "Quantum simulation completed in " + sec + " seconds."
+        : "Classical optimization completed in " + sec + " seconds.";
     }
 
     hide($("backtest-chart-wrap"));
@@ -432,9 +434,11 @@ function renderResultsSummary(data) {
     hide(block);
     return;
   }
-    body.innerHTML = `
+    const sharpeStr = q.sharpeRatio != null ? q.sharpeRatio.toFixed(2) : "—";
+  body.innerHTML = `
     <div class="flex justify-between"><span>Expected return</span><span class="font-mono text-blue-600 dark:text-blue-400">${(q.expectedReturn * 100).toFixed(2)}%</span></div>
-    <div class="flex justify-between"><span>Risk</span><span class="font-mono text-blue-600 dark:text-blue-400">${(q.risk * 100).toFixed(2)}%</span></div>
+    <div class="flex justify-between"><span>Risk (volatility)</span><span class="font-mono text-blue-600 dark:text-blue-400">${(q.risk * 100).toFixed(2)}%</span></div>
+    <div class="flex justify-between"><span>Sharpe ratio</span><span class="font-mono text-blue-600 dark:text-blue-400">${sharpeStr}</span></div>
     <div class="flex justify-between"><span>Method</span><span class="font-mono">${escapeHtml(q.methodUsed)}</span></div>
     <div class="flex justify-between"><span>Time</span><span class="font-mono">${q.computationTimeMs} ms</span></div>
   `;
@@ -489,6 +493,7 @@ function renderResults(data) {
       <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Selected</td><td class="py-2 pr-4">${c && c.selectedNames ? c.selectedNames.join(", ") : "—"}</td><td class="py-2">${(q.selectedNames || []).join(", ")}</td></tr>
       <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Expected return</td><td class="py-2 pr-4">${c ? (c.expectedReturn * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.expectedReturn * 100).toFixed(2)}%</td></tr>
       <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Risk</td><td class="py-2 pr-4">${c ? (c.risk * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.risk * 100).toFixed(2)}%</td></tr>
+      <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Sharpe ratio</td><td class="py-2 pr-4">${c && c.sharpeRatio != null ? c.sharpeRatio.toFixed(2) : "—"}</td><td class="py-2">${q.sharpeRatio != null ? q.sharpeRatio.toFixed(2) : "—"}</td></tr>
       <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Objective</td><td class="py-2 pr-4">${c ? c.objectiveValue.toFixed(4) : "—"}</td><td class="py-2">${q.objectiveValue.toFixed(4)}</td></tr>
       <tr><td class="py-2 pr-4">Time (ms)</td><td class="py-2 pr-4">${c ? c.computationTimeMs : "—"}</td><td class="py-2">${q.computationTimeMs}</td></tr>
     </tbody>

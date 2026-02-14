@@ -65,14 +65,14 @@ git push -u origin main
 | **Region** | Choose closest to you (e.g. Oregon, Frankfurt) |
 | **Branch** | `main` |
 | **Runtime** | **Python 3** |
-| **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `gunicorn app:app --bind 0.0.0.0:$PORT` |
+| **Build Command** | `pip install -r requirements-light.txt` |
+| **Start Command** | `gunicorn app:app --bind 0.0.0.0:$PORT --workers 1` |
 | **Plan** | **Free** |
 
 4. (Optional) **Health Check Path**: set to `/api/health` so Render knows when the app is ready.
 5. Click **Create Web Service**.
 
-Render will clone the repo, run the build command, then start the app. The first deploy can take 5–10 minutes (Qiskit and dependencies are large).
+Render will clone the repo, run the build command, then start the app. With `requirements-light.txt`, the build is fast (~1–2 min) and the app uses pure NumPy for optimization—always works on free tier.
 
 ---
 
