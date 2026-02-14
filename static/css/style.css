@@ -1,13 +1,13 @@
 /* Quantum Portfolio Optimizer - Styles */
 
 :root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --border: #334155;
-  --text: #f1f5f9;
-  --text-muted: #94a3b8;
-  --primary: #38bdf8;
-  --primary-hover: #7dd3fc;
+  --bg: #1F2937;
+  --surface: #374151;
+  --border: #4b5563;
+  --text: #F9FAFB;
+  --text-muted: #9ca3af;
+  --primary: #3B82F6;
+  --primary-hover: #60a5fa;
   --success: #34d399;
   --warning: #fbbf24;
   --error: #f87171;

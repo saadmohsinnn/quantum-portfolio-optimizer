@@ -1,128 +1,199 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quantum Portfolio Optimizer</title>
-  <meta name="description" content="Optimize a stock portfolio using real quantum computing (VQE). Live market data, no API keys. Powered by Qiskit." />
-  <meta property="og:title" content="Quantum Portfolio Optimizer" />
-  <meta property="og:description" content="Optimize a stock portfolio using real quantum computing (VQE). Live market data, no API keys. Powered by Qiskit." />
+  <title>Quantum Playground</title>
+  <meta name="description" content="Quantum Playground – Play with qubits. Optimize your future. Real quantum portfolio optimization with VQE. Live or demo mode. 100% free." />
+  <meta property="og:title" content="Quantum Playground" />
+  <meta property="og:description" content="Play with qubits. Optimize your future. Real quantum portfolio optimization with VQE." />
   <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: { extend: {} }
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            'bg-dark': '#1F2937',
+            'surface-dark': '#374151'
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
     }
   </script>
   <link rel="stylesheet" href="/static/css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen transition-colors">
+<body class="bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-50 min-h-screen transition-colors font-sans">
   <div class="app max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
     <!-- Header -->
-    <header class="border-b border-slate-200 dark:border-slate-700 pb-4 mb-4">
+    <header class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-            Quantum Portfolio Optimizer
-          </h1>
-          <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
-            Real-time quantum-inspired portfolio optimization with live market data
-          </p>
+        <div class="flex items-center gap-3">
+          <div class="flex-shrink-0 w-12 h-12 text-[#3B82F6]">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2" fill="none"/>
+              <ellipse cx="24" cy="24" rx="12" ry="6" stroke="currentColor" stroke-width="1.5" fill="none" transform="rotate(-30 24 24)"/>
+              <ellipse cx="24" cy="24" rx="12" ry="6" stroke="currentColor" stroke-width="1.5" fill="none" transform="rotate(30 24 24)"/>
+              <circle cx="24" cy="24" r="3" fill="currentColor"/>
+              <path d="M8 38 L16 32 L24 36 L32 30 L40 34" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+              Quantum Playground
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-0.5">
+              Play with qubits. Optimize your future.
+            </p>
+          </div>
         </div>
         <div class="flex items-center gap-2">
-          <button type="button" id="theme-toggle" class="p-2 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition" aria-label="Toggle dark mode">
-            <span class="dark:hidden">🌙</span>
-            <span class="hidden dark:inline">☀️</span>
+          <button type="button" id="theme-toggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition text-gray-700 dark:text-gray-200" aria-label="Toggle theme">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:inline"></i>
           </button>
-          <button type="button" id="video-btn" class="text-sm px-3 py-1.5 rounded-lg bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-800 transition">
+          <button type="button" id="learn-more-btn" class="text-sm px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-info"></i> Learn More
+          </button>
+          <button type="button" id="video-btn" class="text-sm px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 transition">
             What is Quantum Computing?
           </button>
         </div>
       </div>
     </header>
 
+    <!-- Learn More (collapsible) -->
+    <div id="learn-more-section" class="hidden mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5 shadow-sm">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-atom text-[#3B82F6]"></i> Quantum concepts explained
+      </h2>
+      <div class="grid gap-4 text-sm text-gray-600 dark:text-gray-300">
+        <div>
+          <h3 class="font-medium text-[#3B82F6] mb-1">What is a qubit?</h3>
+          <p>The basic unit of quantum information. Unlike a classical bit (0 or 1), a qubit can exist in a superposition of both states until measured. Here, each stock is encoded as one qubit: 1 = hold, 0 = don't hold.</p>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#3B82F6] mb-1">Superposition</h3>
+          <p>Qubits can be 0 and 1 at the same time. This lets the quantum circuit explore many portfolio combinations at once, instead of trying them one by one—a form of quantum parallelism.</p>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#3B82F6] mb-1">Entanglement</h3>
+          <p>Qubits can be linked so that measuring one affects others instantly. This captures correlations between stocks: when one moves, others may move together.</p>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#3B82F6] mb-1">VQE (Variational Quantum Eigensolver)</h3>
+          <p>A hybrid quantum-classical algorithm that finds the best portfolio by minimizing a cost function. It runs a parameterized quantum circuit and uses a classical optimizer to tune those parameters.</p>
+        </div>
+        <div>
+          <h3 class="font-medium text-[#3B82F6] mb-1">Why quantum for finance?</h3>
+          <p>Portfolio optimization is combinatorially hard. Quantum algorithms offer potential speedup and better solutions for complex optimizations as hardware improves.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Cold start notice (for Render free tier) -->
-    <div id="cold-start-notice" class="mb-4 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/30 px-4 py-2 text-sm text-sky-800 dark:text-sky-200 flex items-center justify-between gap-2">
+    <div id="cold-start-notice" class="mb-4 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 px-4 py-2 text-sm text-blue-800 dark:text-blue-200 flex items-center justify-between gap-2">
       <span>On free hosting, the first load may take 30–60 seconds if the app was sleeping. Please wait and refresh if needed.</span>
-      <button type="button" id="cold-start-dismiss" class="shrink-0 text-sky-600 dark:text-sky-400 hover:underline" aria-label="Dismiss">Dismiss</button>
+      <button type="button" id="cold-start-dismiss" class="shrink-0 text-blue-600 dark:text-blue-400 hover:underline" aria-label="Dismiss">Dismiss</button>
     </div>
 
     <!-- Data timestamp & refresh -->
     <section class="flex flex-wrap items-center gap-2 mb-4 text-sm">
-      <span id="data-timestamp" class="text-slate-500 dark:text-slate-400">Data as of: —</span>
+      <span id="data-timestamp" class="text-gray-500 dark:text-gray-400">Data as of: —</span>
+      <span id="demo-badge" class="hidden px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200"><i class="fa-solid fa-flask mr-1"></i>Demo mode</span>
       <span id="data-stale" class="hidden px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200">Data may be stale</span>
-      <button type="button" id="refresh-data" class="text-sky-600 dark:text-sky-400 hover:underline">Refresh data</button>
+      <button type="button" id="refresh-data" class="text-blue-600 dark:text-blue-400 hover:underline">Refresh data</button>
     </section>
 
     <!-- Ticker -->
-    <section class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4 mb-6">
-      <div class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">Live prices</div>
+    <section class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-4 mb-6">
+      <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2"><span id="ticker-label">Live prices</span></div>
       <div id="ticker-list" class="flex flex-wrap gap-3 items-center"></div>
     </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left: Controls + How it works -->
       <aside class="lg:col-span-4 space-y-6">
-        <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5 shadow-sm">
-          <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Setup</h2>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5 shadow-sm">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Setup</h2>
+
+          <!-- Demo Mode toggle -->
+          <div class="mb-4 p-3 rounded-lg bg-gray-100 dark:bg-gray-600/30 border border-gray-200 dark:border-gray-600">
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <i class="fa-solid fa-flask text-blue-500 mr-1.5"></i>Demo Mode (pre-computed data)
+              </span>
+              <div class="relative">
+                <input type="checkbox" id="demo-mode" checked class="sr-only peer" />
+                <div class="w-11 h-6 bg-gray-300 dark:bg-gray-600 peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+              </div>
+            </label>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5">When ON, uses static data—works instantly with no network calls.</p>
+          </div>
 
           <!-- Predefined stock lists -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Quick select</label>
+          <div id="live-controls" class="mb-4">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Quick select</label>
             <div class="flex flex-wrap gap-1">
-              <button type="button" data-list="finnish" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500">Finnish</button>
-              <button type="button" data-list="tech_giants" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500">Tech Giants</button>
-              <button type="button" data-list="eu_banks" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500">EU Banks</button>
-              <button type="button" data-list="all" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500">All</button>
+              <button type="button" data-list="finnish" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500">Finnish</button>
+              <button type="button" data-list="tech_giants" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500">Tech Giants</button>
+              <button type="button" data-list="eu_banks" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500">EU Banks</button>
+              <button type="button" data-list="all" class="predefined-tab px-3 py-1.5 rounded-lg text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500">All</button>
             </div>
           </div>
 
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Select stocks (4–6 for fast optimization)</label>
+          <div id="stock-select-wrap" class="mb-4">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Select stocks (4–6 for fast optimization)</label>
             <div id="asset-checkboxes" class="flex flex-wrap gap-2"></div>
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Number of assets to select (budget)</label>
-            <input type="number" id="budget" min="1" max="6" value="2" class="w-20 px-2 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" />
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Number of assets to select (budget)</label>
+            <input type="number" id="budget" min="1" max="6" value="2" class="w-20 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
               Risk tolerance
-              <span class="tooltip-trigger cursor-help border-b border-dotted border-slate-400" data-term="risk">q</span>
+              <span class="tooltip-trigger cursor-help border-b border-dotted border-gray-400" data-term="risk">q</span>
               (0 = max return → 1 = min risk)
             </label>
-            <input type="range" id="risk" min="0" max="100" value="50" class="w-full max-w-xs accent-sky-500" />
-            <span id="risk-value" class="ml-2 text-sm font-mono text-sky-600 dark:text-sky-400">0.50</span>
+            <input type="range" id="risk" min="0" max="100" value="50" class="w-full max-w-xs accent-blue-500" />
+            <span id="risk-value" class="ml-2 text-sm font-mono text-blue-600 dark:text-blue-400">0.50</span>
           </div>
 
           <div class="mb-4">
             <label class="inline-flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" id="use-quantum" checked class="rounded accent-sky-500" />
+              <input type="checkbox" id="use-quantum" checked class="rounded accent-blue-500" />
               <span>Use <span class="tooltip-trigger cursor-help border-b border-dotted" data-term="vqe">quantum (VQE)</span> optimization</span>
             </label>
           </div>
 
-          <button type="button" id="run-optimize" disabled class="w-full py-2.5 rounded-lg bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium transition">
+          <button type="button" id="run-optimize" class="w-full py-2.5 rounded-lg bg-[#3B82F6] hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium transition">
             Run optimization
           </button>
 
-          <div id="results-summary" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Results summary</h3>
+          <div id="results-summary" class="hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Results summary</h3>
             <div id="results-summary-body" class="text-sm space-y-1"></div>
           </div>
         </div>
 
         <!-- How it works -->
-        <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5 shadow-sm">
-          <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">How it works</h3>
-          <ol class="text-sm text-slate-600 dark:text-slate-400 space-y-2 list-decimal list-inside">
-            <li>We map each stock to a <span class="tooltip-trigger cursor-help font-medium text-slate-700 dark:text-slate-300 border-b border-dotted" data-term="qubit">qubit</span>.</li>
-            <li>The quantum circuit explores all combinations at once (<span class="tooltip-trigger cursor-help font-medium text-slate-700 dark:text-slate-300 border-b border-dotted" data-term="superposition">superposition</span>).</li>
-            <li><span class="tooltip-trigger cursor-help font-medium text-slate-700 dark:text-slate-300 border-b border-dotted" data-term="entanglement">Entanglement</span> links stocks so the algorithm understands correlations.</li>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5 shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">How it works</h3>
+          <ol class="text-sm text-gray-600 dark:text-gray-400 space-y-2 list-decimal list-inside">
+            <li>We map each stock to a <span class="tooltip-trigger cursor-help font-medium text-gray-700 dark:text-gray-300 border-b border-dotted" data-term="qubit">qubit</span>.</li>
+            <li>The quantum circuit explores all combinations at once (<span class="tooltip-trigger cursor-help font-medium text-gray-700 dark:text-gray-300 border-b border-dotted" data-term="superposition">superposition</span>).</li>
+            <li><span class="tooltip-trigger cursor-help font-medium text-gray-700 dark:text-gray-300 border-b border-dotted" data-term="entanglement">Entanglement</span> links stocks so the algorithm understands correlations.</li>
             <li>Measurement gives the best portfolio.</li>
           </ol>
         </div>
@@ -130,71 +201,79 @@
 
       <!-- Right: Results & charts -->
       <div class="lg:col-span-8 space-y-6">
-        <div id="loading" class="hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-8 text-center">
-          <div class="inline-block w-12 h-12 border-4 border-slate-200 dark:border-slate-600 border-t-sky-500 rounded-full animate-spin mb-4"></div>
-          <p class="text-slate-600 dark:text-slate-400">Running quantum optimization…</p>
-          <div class="mt-2 h-2 max-w-xs mx-auto bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
-            <div id="progress-bar" class="h-full bg-sky-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+        <div id="loading" class="hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-8 text-center">
+          <div class="inline-block w-12 h-12 border-4 border-gray-200 dark:border-gray-600 border-t-[#3B82F6] rounded-full animate-spin mb-4"></div>
+          <p class="text-gray-600 dark:text-gray-400">Running quantum optimization…</p>
+          <div class="mt-2 h-2 max-w-xs mx-auto bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-[#3B82F6] rounded-full transition-all duration-300" style="width: 0%"></div>
           </div>
         </div>
 
         <div id="error-message" class="hidden rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4 text-red-700 dark:text-red-300"></div>
 
         <div id="results-area" class="hidden space-y-6">
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Recommended portfolio</h3>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Recommended portfolio</h3>
             <p id="recommended-text" class="text-emerald-600 dark:text-emerald-400 font-medium"></p>
-            <p id="completion-time" class="text-sm text-slate-500 dark:text-slate-400 mt-1"></p>
-            <div id="quantum-details" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-600 text-sm text-slate-600 dark:text-slate-400 space-y-1"></div>
+            <p id="completion-time" class="text-sm text-gray-500 dark:text-gray-400 mt-1"></p>
+            <div id="quantum-details" class="hidden mt-3 pt-3 border-t border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-400 space-y-1"></div>
           </div>
 
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Classical vs quantum</h3>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Classical vs quantum</h3>
             <div id="comparison-table" class="overflow-x-auto"></div>
           </div>
 
           <!-- Risk–return scatter -->
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Risk & return</h3>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Risk & return</h3>
             <div class="h-64 sm:h-80"><canvas id="risk-return-chart"></canvas></div>
           </div>
 
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Quantum probability distribution</h3>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Quantum probability distribution</h3>
             <div class="h-56"><canvas id="prob-chart"></canvas></div>
           </div>
 
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">VQE convergence</h3>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">VQE convergence</h3>
             <div class="h-56"><canvas id="convergence-chart"></canvas></div>
           </div>
 
+          <!-- Hall of Fame -->
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-trophy text-[#3B82F6]"></i> Hall of Fame – Example results
+            </h3>
+            <div id="hall-of-fame" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+          </div>
+
           <!-- Circuit toggle -->
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <button type="button" id="circuit-toggle" class="text-sm font-medium text-sky-600 dark:text-sky-400 hover:underline mb-2">Show quantum circuit</button>
-            <p id="circuit-stats" class="text-sm text-slate-500 dark:text-slate-400 mb-2"></p>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <button type="button" id="circuit-toggle" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline mb-2">Show quantum circuit</button>
+            <p id="circuit-stats" class="text-sm text-gray-500 dark:text-gray-400 mb-2"></p>
             <div id="circuit-container" class="hidden mt-2 rounded-lg overflow-auto bg-white p-2">
               <img id="circuit-img" alt="Quantum circuit" class="max-w-full h-auto" />
             </div>
           </div>
 
           <!-- Backtest -->
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Historical performance (3 months)</h3>
-            <button type="button" id="backtest-btn" class="text-sm px-3 py-1.5 rounded-lg bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-800 transition mb-3">Show historical performance</button>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Historical performance (3 months)</h3>
+            <button type="button" id="backtest-btn" class="text-sm px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800 transition mb-3">Show historical performance</button>
             <div id="backtest-chart-wrap" class="hidden h-64"><canvas id="backtest-chart"></canvas></div>
           </div>
 
           <!-- Share -->
-          <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-3">Share results</h3>
+          <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Share results</h3>
             <div class="flex flex-wrap gap-2">
               <button type="button" id="linkedin-btn" class="px-4 py-2 rounded-lg bg-[#0A66C2] hover:bg-[#004182] text-white text-sm font-medium transition">Generate LinkedIn post</button>
-              <button type="button" id="screenshot-btn" class="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium transition">Download screenshot</button>
+              <button type="button" id="screenshot-btn" class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium transition">Download screenshot</button>
             </div>
             <div id="linkedin-output" class="hidden mt-3">
-              <label class="block text-sm text-slate-600 dark:text-slate-400 mb-1">Copy this post:</label>
-              <textarea id="linkedin-text" rows="4" class="w-full px-3 py-2 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm" readonly></textarea>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Copy this post:</label>
+              <textarea id="linkedin-text" rows="4" class="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm" readonly></textarea>
             </div>
           </div>
         </div>
@@ -202,30 +281,37 @@
     </div>
 
     <!-- Tips -->
-    <section class="mt-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-5">
-      <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Tips</h2>
-      <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
-        <li><strong class="text-slate-700 dark:text-slate-300">Select 4–6 stocks</strong> for fast results (2–5 seconds).</li>
-        <li><strong class="text-slate-700 dark:text-slate-300">Budget</strong> = how many of the selected stocks to hold.</li>
-        <li><strong class="text-slate-700 dark:text-slate-300">Risk factor</strong>: 0 = max return, 1 = more risk-averse.</li>
-        <li>Data auto-refreshes every 5 minutes; use <strong class="text-slate-700 dark:text-slate-300">Refresh data</strong> to update now.</li>
+    <section class="mt-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-5">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tips</h2>
+      <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
+        <li><strong class="text-gray-700 dark:text-gray-300">Demo Mode</strong> uses pre-computed data—works instantly, no network needed.</li>
+        <li><strong class="text-gray-700 dark:text-gray-300">Select 4–6 stocks</strong> for fast results (2–5 seconds).</li>
+        <li><strong class="text-gray-700 dark:text-gray-300">Budget</strong> = how many of the selected stocks to hold.</li>
+        <li><strong class="text-gray-700 dark:text-gray-300">Risk factor</strong>: 0 = max return, 1 = more risk-averse.</li>
+        <li>Data auto-refreshes every 5 minutes; use <strong class="text-gray-700 dark:text-gray-300">Refresh data</strong> to update now.</li>
       </ul>
     </section>
 
-    <footer class="mt-8 pt-4 border-t border-slate-200 dark:border-slate-700 text-center text-sm text-slate-500 dark:text-slate-400">
-      Qiskit (Aer) · yfinance · Flask · No API keys required
+    <footer class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400">
+      <p class="mb-2">© 2026 Saad Mohsin</p>
+      <p class="mb-3">A demonstration project – learn more about quantum finance.</p>
+      <div class="flex justify-center gap-4">
+        <a href="https://www.linkedin.com/in/saadmohsin" target="_blank" rel="noopener noreferrer" class="text-[#3B82F6] hover:underline flex items-center gap-1"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+        <a href="https://github.com/saadmohsin/quantum-portfolio-app" target="_blank" rel="noopener noreferrer" class="text-[#3B82F6] hover:underline flex items-center gap-1"><i class="fa-brands fa-github"></i> GitHub</a>
+      </div>
+      <p class="mt-3 text-xs">Qiskit (Aer) · yfinance · Flask · 100% free · No API keys</p>
     </footer>
   </div>
 
   <!-- Tooltip popup -->
-  <div id="tooltip-popup" class="fixed z-50 hidden max-w-xs px-3 py-2 text-sm rounded-lg shadow-lg bg-slate-800 text-slate-100 border border-slate-600 pointer-events-none"></div>
+  <div id="tooltip-popup" class="fixed z-50 hidden max-w-xs px-3 py-2 text-sm rounded-lg shadow-lg bg-gray-800 text-gray-100 border border-gray-600 pointer-events-none"></div>
 
   <!-- Video modal -->
   <div id="video-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 p-4">
-    <div class="bg-white dark:bg-slate-800 rounded-xl max-w-2xl w-full overflow-hidden shadow-xl">
-      <div class="p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
-        <h3 class="font-semibold text-slate-900 dark:text-white">What is Quantum Computing?</h3>
-        <button type="button" id="video-close" class="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700">✕</button>
+    <div class="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full overflow-hidden shadow-xl">
+      <div class="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
+        <h3 class="font-semibold text-gray-900 dark:text-white">What is Quantum Computing?</h3>
+        <button type="button" id="video-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">✕</button>
       </div>
       <div class="aspect-video">
         <iframe id="video-iframe" class="w-full h-full" src="about:blank" title="Quantum computing explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

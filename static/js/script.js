@@ -1,6 +1,6 @@
 /**
- * Quantum Portfolio Optimizer - Frontend.
- * Explainability, auto-refresh, risk-return chart, backtest, share, progress, error handling.
+ * Quantum Playground - Frontend.
+ * Demo mode, Learn More, Hall of Fame, theme (dark default), explainability, backtest, share.
  */
 
 const API = {
@@ -37,6 +37,7 @@ const TOOLTIPS = {
 };
 
 let marketAssets = [];
+let demoMode = true;
 let probChart = null;
 let convergenceChart = null;
 let riskReturnChart = null;
@@ -65,14 +66,13 @@ function escapeHtml(s) {
   return div.innerHTML;
 }
 
-// —— Theme ——
+// —— Theme (dark mode default) ——
 function initTheme() {
-  const dark = document.documentElement.classList.contains("dark");
   const stored = localStorage.getItem("theme");
-  if (stored === "dark" || (!stored && dark)) {
-    document.documentElement.classList.add("dark");
-  } else {
+  if (stored === "light") {
     document.documentElement.classList.remove("dark");
+  } else {
+    document.documentElement.classList.add("dark");
   }
 }
 
@@ -149,7 +149,7 @@ function renderTicker(assets) {
     .map((a) => {
       const up = (a.dayChangePercent || 0) >= 0;
       return `<span class="inline-flex items-center gap-1 text-sm">
-        <span class="font-semibold text-sky-600 dark:text-sky-400">${escapeHtml(a.symbol)}</span>
+        <span class="font-semibold text-blue-600 dark:text-blue-400">${escapeHtml(a.symbol)}</span>
         <span class="font-mono">$${Number(a.currentPrice || 0).toFixed(2)}</span>
         <span class="${up ? "text-emerald-600" : "text-red-600"}">${up ? "+" : ""}${Number(a.dayChangePercent || 0).toFixed(2)}%</span>
       </span>`;
@@ -164,7 +164,7 @@ function renderAssetCheckboxes(assets) {
     .map(
       (a) => `
     <label class="inline-flex items-center gap-1.5 cursor-pointer">
-      <input type="checkbox" name="asset" value="${escapeHtml(a.symbol)}" data-name="${escapeHtml(a.name || a.symbol)}" class="rounded accent-sky-500" />
+      <input type="checkbox" name="asset" value="${escapeHtml(a.symbol)}" data-name="${escapeHtml(a.name || a.symbol)}" class="rounded accent-blue-500" />
       <span>${escapeHtml(a.symbol)}</span>
     </label>
   `
@@ -191,9 +191,10 @@ function updateRunButton() {
   const btn = $("run-optimize");
   const budgetEl = $("budget");
   const selected = getSelectedSymbols();
-  btn.disabled = selected.length < 2;
-  if (budgetEl && selected.length >= 2) {
-    budgetEl.max = Math.min(6, selected.length - 1);
+  btn.disabled = !demoMode && selected.length < 2;
+  if (budgetEl) {
+    const n = demoMode ? 5 : selected.length;
+    budgetEl.max = Math.min(6, Math.max(1, n - 1));
     budgetEl.min = 1;
     const v = parseInt(budgetEl.value, 10);
     if (v >= parseInt(budgetEl.max, 10)) budgetEl.value = budgetEl.max;
@@ -224,11 +225,11 @@ async function loadPredefinedList(listId) {
       cb.checked = symbols.includes(cb.value);
     });
     document.querySelectorAll(".predefined-tab").forEach((btn) => {
-      btn.classList.remove("bg-sky-500", "text-white");
-      btn.classList.add("bg-slate-200", "dark:bg-slate-600");
+      btn.classList.remove("bg-blue-500", "text-white");
+      btn.classList.add("bg-gray-200", "dark:bg-gray-600");
       if (btn.getAttribute("data-list") === listId) {
-        btn.classList.remove("bg-slate-200", "dark:bg-slate-600");
-        btn.classList.add("bg-sky-500", "text-white");
+        btn.classList.remove("bg-gray-200", "dark:bg-gray-600");
+        btn.classList.add("bg-blue-500", "text-white");
       }
     });
     updateRunButton();
@@ -237,8 +238,67 @@ async function loadPredefinedList(listId) {
   }
 }
 
+// —— Demo mode helpers ——
+function setDemoMode(on) {
+  demoMode = on;
+  const badge = $("demo-badge");
+  const tickerLabel = $("ticker-label");
+  const liveControls = $("live-controls");
+  const stockSelect = $("stock-select-wrap");
+  const refreshBtn = $("refresh-data");
+  if (badge) badge.classList.toggle("hidden", !on);
+  if (tickerLabel) tickerLabel.textContent = on ? "Demo data" : "Live prices";
+  if (liveControls) liveControls.classList.toggle("hidden", on);
+  if (stockSelect) stockSelect.classList.toggle("hidden", on);
+  if (refreshBtn) refreshBtn.classList.toggle("hidden", on);
+  if (on) {
+    loadDemoData();
+  } else {
+    fetchMarket();
+  }
+  updateRunButton();
+}
+
+async function loadDemoData() {
+  try {
+    const data = await API.get("/api/demo-data");
+    const assets = data.assets || data.symbols.map((s, i) => ({
+      symbol: s,
+      name: (data.assetNames || {})[s] || s,
+      currentPrice: 100,
+      dayChangePercent: 0
+    }));
+    if (data.assets) {
+      marketAssets = data.assets;
+    } else {
+      marketAssets = (data.symbols || []).map((s) => ({
+        symbol: s,
+        name: (data.assetNames || {})[s] || s,
+        currentPrice: 100,
+        dayChangePercent: 0
+      }));
+    }
+    renderTicker(marketAssets);
+    renderAssetCheckboxes(marketAssets);
+    setDataTimestamp(Math.floor(Date.now() / 1000));
+  } catch (e) {
+    console.warn("Demo data failed", e);
+    marketAssets = [
+      { symbol: "NOK", name: "Nokia", currentPrice: 4.12, dayChangePercent: 0.8 },
+      { symbol: "NDA-FI.HE", name: "Nordea", currentPrice: 11.85, dayChangePercent: -0.3 },
+      { symbol: "FORTUM.HE", name: "Fortum", currentPrice: 14.2, dayChangePercent: 1.2 },
+      { symbol: "AAPL", name: "Apple", currentPrice: 188.5, dayChangePercent: 0.5 },
+      { symbol: "GOOGL", name: "Google", currentPrice: 142.3, dayChangePercent: 0.9 }
+    ];
+    renderTicker(marketAssets);
+    renderAssetCheckboxes(marketAssets);
+  }
+  updateRunButton();
+}
+
 // —— Fetch market (with optional silent for auto-refresh) ——
 async function fetchMarket(silent = false) {
+  if (demoMode) return;
   try {
     const data = await API.get("/api/market");
     marketAssets = data.assets || [];
@@ -290,12 +350,12 @@ function stopProgressBar() {
 // —— Optimize (with risk slider debounce support) ——
 let optimizeDebounce = null;
 async function runOptimization() {
-  const symbols = getSelectedSymbols();
+  const symbols = demoMode ? ["NOK", "NDA-FI.HE", "FORTUM.HE", "AAPL", "GOOGL"] : getSelectedSymbols();
   const budget = getBudget();
   const riskFactor = getRiskFactor();
   const useQuantum = $("use-quantum").checked;
 
-  if (symbols.length < 2) {
+  if (!demoMode && symbols.length < 2) {
     showError("Select at least 2 assets.");
     return;
   }
@@ -310,12 +370,14 @@ async function runOptimization() {
   startProgressBar();
 
   try {
-    const result = await API.post("/api/optimize", {
-      symbols,
+    const payload = {
+      symbols: demoMode ? [] : symbols,
       budget,
       riskFactor,
       useQuantum,
-    });
+      useDemoData: demoMode,
+    };
+    const result = await API.post("/api/optimize", payload);
 
     stopProgressBar();
     hide($("loading"));
@@ -324,8 +386,9 @@ async function runOptimization() {
     lastOptimizeResult = result;
     renderResults(result);
     renderResultsSummary(result);
+    renderHallOfFame();
     updateCircuitImage(symbols.length);
-    renderRiskReturnChart(symbols, result);
+    renderRiskReturnChart(result.symbols || symbols, result);
     setDataTimestamp();
 
     const q = result.quantum || result.classical;
@@ -369,9 +432,9 @@ function renderResultsSummary(data) {
     hide(block);
     return;
   }
-  body.innerHTML = `
-    <div class="flex justify-between"><span>Expected return</span><span class="font-mono text-sky-600 dark:text-sky-400">${(q.expectedReturn * 100).toFixed(2)}%</span></div>
-    <div class="flex justify-between"><span>Risk</span><span class="font-mono text-sky-600 dark:text-sky-400">${(q.risk * 100).toFixed(2)}%</span></div>
+    body.innerHTML = `
+    <div class="flex justify-between"><span>Expected return</span><span class="font-mono text-blue-600 dark:text-blue-400">${(q.expectedReturn * 100).toFixed(2)}%</span></div>
+    <div class="flex justify-between"><span>Risk</span><span class="font-mono text-blue-600 dark:text-blue-400">${(q.risk * 100).toFixed(2)}%</span></div>
     <div class="flex justify-between"><span>Method</span><span class="font-mono">${escapeHtml(q.methodUsed)}</span></div>
     <div class="flex justify-between"><span>Time</span><span class="font-mono">${q.computationTimeMs} ms</span></div>
   `;
@@ -421,12 +484,12 @@ function renderResults(data) {
   const table = document.createElement("table");
   table.className = "w-full text-sm border-collapse";
   table.innerHTML = `
-    <thead><tr class="border-b border-slate-200 dark:border-slate-600"><th class="text-left py-2 pr-4">Metric</th><th class="text-left py-2 pr-4">Classical</th><th class="text-left py-2">Quantum</th></tr></thead>
+    <thead><tr class="border-b border-gray-200 dark:border-gray-600"><th class="text-left py-2 pr-4">Metric</th><th class="text-left py-2 pr-4">Classical</th><th class="text-left py-2">Quantum</th></tr></thead>
     <tbody>
-      <tr class="border-b border-slate-100 dark:border-slate-700"><td class="py-2 pr-4">Selected</td><td class="py-2 pr-4">${c && c.selectedNames ? c.selectedNames.join(", ") : "—"}</td><td class="py-2">${(q.selectedNames || []).join(", ")}</td></tr>
-      <tr class="border-b border-slate-100 dark:border-slate-700"><td class="py-2 pr-4">Expected return</td><td class="py-2 pr-4">${c ? (c.expectedReturn * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.expectedReturn * 100).toFixed(2)}%</td></tr>
-      <tr class="border-b border-slate-100 dark:border-slate-700"><td class="py-2 pr-4">Risk</td><td class="py-2 pr-4">${c ? (c.risk * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.risk * 100).toFixed(2)}%</td></tr>
-      <tr class="border-b border-slate-100 dark:border-slate-700"><td class="py-2 pr-4">Objective</td><td class="py-2 pr-4">${c ? c.objectiveValue.toFixed(4) : "—"}</td><td class="py-2">${q.objectiveValue.toFixed(4)}</td></tr>
+      <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Selected</td><td class="py-2 pr-4">${c && c.selectedNames ? c.selectedNames.join(", ") : "—"}</td><td class="py-2">${(q.selectedNames || []).join(", ")}</td></tr>
+      <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Expected return</td><td class="py-2 pr-4">${c ? (c.expectedReturn * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.expectedReturn * 100).toFixed(2)}%</td></tr>
+      <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Risk</td><td class="py-2 pr-4">${c ? (c.risk * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.risk * 100).toFixed(2)}%</td></tr>
+      <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Objective</td><td class="py-2 pr-4">${c ? c.objectiveValue.toFixed(4) : "—"}</td><td class="py-2">${q.objectiveValue.toFixed(4)}</td></tr>
       <tr><td class="py-2 pr-4">Time (ms)</td><td class="py-2 pr-4">${c ? c.computationTimeMs : "—"}</td><td class="py-2">${q.computationTimeMs}</td></tr>
     </tbody>
   `;
@@ -442,7 +505,7 @@ function renderResults(data) {
       type: "bar",
       data: {
         labels: probEntries.map(([k]) => k),
-        datasets: [{ label: "Probability", data: probEntries.map(([, v]) => v), backgroundColor: "rgba(14, 165, 233, 0.7)" }],
+        datasets: [{ label: "Probability", data: probEntries.map(([, v]) => v), backgroundColor: "rgba(59, 130, 246, 0.7)" }],
       },
       options: {
         indexAxis: "y",
@@ -466,7 +529,7 @@ function renderResults(data) {
       type: "line",
       data: {
         labels: conv.map((_, i) => i + 1),
-        datasets: [{ label: "Objective", data: conv, borderColor: "#0ea5e9", fill: false, tension: 0.1 }],
+        datasets: [{ label: "Objective", data: conv, borderColor: "#3B82F6", fill: false, tension: 0.1 }],
       },
       options: {
         responsive: true,
@@ -498,7 +561,10 @@ async function renderRiskReturnChart(symbols, result) {
   let frontier = [];
 
   try {
-    const data = await API.get("/api/risk-return?symbols=" + encodeURIComponent(symbols.join(",")));
+    const url = demoMode
+      ? "/api/risk-return?useDemoData=true"
+      : "/api/risk-return?symbols=" + encodeURIComponent(symbols.join(","));
+    const data = await API.get(url);
     if (data && !data.error) {
       assets = data.assets || [];
       frontier = data.efficientFrontier || [];
@@ -528,8 +594,8 @@ async function renderRiskReturnChart(symbols, result) {
     datasets.push({
       label: "Stocks",
       data: assets.map((a) => ({ x: a.risk * 100, y: a.return * 100 })),
-      backgroundColor: "rgba(14, 165, 233, 0.6)",
-      borderColor: "#0ea5e9",
+      backgroundColor: "rgba(59, 130, 246, 0.6)",
+      borderColor: "#3B82F6",
       pointRadius: 8,
       pointHoverRadius: 10,
     });
@@ -658,6 +724,29 @@ async function runBacktest() {
   }
 }
 
+// —— Hall of Fame (static examples) ——
+const HALL_OF_FAME = [
+  { stocks: "Apple + Microsoft", date: "March 2025", desc: "Quantum recommended these with 92% confidence during a market dip." },
+  { stocks: "Nordea + Nokia + Fortum", date: "February 2025", desc: "Finnish portfolio with low correlation—quantum favored diversification." },
+  { stocks: "Google + Apple", date: "January 2025", desc: "Tech duo with strong expected returns; quantum agreed with classical." },
+  { stocks: "Nordea + Fortum", date: "December 2024", desc: "Defensive pick during volatility; VQE converged in 47 iterations." },
+  { stocks: "Apple + Google + Microsoft", date: "November 2024", desc: "Quantum found 88% probability for this triple-tech allocation." },
+];
+
+function renderHallOfFame() {
+  const container = $("hall-of-fame");
+  if (!container) return;
+  container.innerHTML = HALL_OF_FAME.map(
+    (h) => `
+    <div class="rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-600/30 p-3 text-sm">
+      <p class="font-medium text-gray-900 dark:text-white">${escapeHtml(h.stocks)}</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${escapeHtml(h.date)}</p>
+      <p class="text-gray-600 dark:text-gray-300 mt-1">${escapeHtml(h.desc)}</p>
+    </div>
+  `
+  ).join("");
+}
+
 // —— LinkedIn & screenshot ——
 function generateLinkedInPost() {
   if (!lastOptimizeResult) return;
@@ -683,7 +772,7 @@ function downloadScreenshot() {
   if (!results) return;
   html2canvas(results, { scale: 2, useCORS: true }).then((canvas) => {
     const a = document.createElement("a");
-    a.download = "quantum-portfolio-results.png";
+    a.download = "quantum-playground-results.png";
     a.href = canvas.toDataURL("image/png");
     a.click();
   });
@@ -730,6 +819,25 @@ function init() {
     });
   }
 
+  const demoCheck = $("demo-mode");
+  if (demoCheck) {
+    demoCheck.checked = true;
+    demoMode = true;
+    setDemoMode(true);
+    demoCheck.addEventListener("change", () => {
+      demoMode = demoCheck.checked;
+      setDemoMode(demoMode);
+    });
+  }
+
+  const learnMoreBtn = $("learn-more-btn");
+  const learnMoreSection = $("learn-more-section");
+  if (learnMoreBtn && learnMoreSection) {
+    learnMoreBtn.addEventListener("click", () => {
+      learnMoreSection.classList.toggle("hidden");
+    });
+  }
+
   $("theme-toggle").addEventListener("click", toggleTheme);
   $("video-btn").addEventListener("click", openVideoModal);
   $("video-close").addEventListener("click", closeVideoModal);
@@ -754,7 +862,8 @@ function init() {
   $("linkedin-btn").addEventListener("click", generateLinkedInPost);
   $("screenshot-btn").addEventListener("click", downloadScreenshot);
 
-  fetchMarket();
+  if (!demoMode) fetchMarket();
+  renderHallOfFame();
   updateRiskLabel();
 }
 

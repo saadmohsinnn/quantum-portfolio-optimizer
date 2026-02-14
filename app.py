@@ -1,6 +1,7 @@
 """
-Quantum Portfolio Optimizer - Flask web application.
+Quantum Playground - Flask web application.
 Serves live market data and runs real Qiskit VQE + classical optimization.
+Demo mode uses pre-computed static data when live data is unavailable.
 """
 
 from __future__ import annotations
@@ -10,6 +11,9 @@ import base64
 import logging
 
 import numpy as np
+import json
+import os
+
 from flask import Flask, render_template, request, jsonify
 
 from data_fetcher import (
@@ -49,7 +53,20 @@ def index():
 @app.route("/api/health", methods=["GET"])
 def api_health():
     """Health check for Render and load balancers. Returns 200 when the app is up."""
-    return jsonify({"status": "ok", "service": "quantum-portfolio-optimizer"}), 200
+    return jsonify({"status": "ok", "service": "quantum-playground"}), 200
+
+
+@app.route("/api/demo-data", methods=["GET"])
+def api_demo_data():
+    """Return pre-computed static data for demo mode. No network calls required."""
+    try:
+        path = os.path.join(app.static_folder, "demo_data.json")
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify(data)
+    except Exception as e:
+        logger.exception("Demo data failed: %s", e)
+        return jsonify({"error": "Could not load demo data"}), 500
 
 
 @app.route("/api/symbols", methods=["GET"])
@@ -79,7 +96,8 @@ def api_market():
 def api_optimize():
     """
     Run portfolio optimization.
-    Body: { "symbols": ["AAPL","GOOGL",...], "budget": 2, "riskFactor": 0.5, "useQuantum": true }
+    Body: { "symbols": ["AAPL","GOOGL",...], "budget": 2, "riskFactor": 0.5, "useQuantum": true, "useDemoData": false }
+    When useDemoData is true, uses pre-computed static data from demo_data.json.
     """
     try:
         body = request.get_json() or {}
@@ -87,20 +105,38 @@ def api_optimize():
         budget = int(body.get("budget", DEFAULT_BUDGET))
         risk_factor = float(body.get("riskFactor", 0.5))
         use_quantum = body.get("useQuantum", True)
+        use_demo_data = body.get("useDemoData", False)
 
-        if len(symbols) < MIN_ASSETS:
-            return jsonify({"error": f"Select at least {MIN_ASSETS} assets"}), 400
-        if len(symbols) > MAX_ASSETS:
-            return jsonify({"error": f"Select at most {MAX_ASSETS} assets for fast optimization"}), 400
+        if use_demo_data:
+            # Demo mode: use static pre-computed data
+            path = os.path.join(app.static_folder, "demo_data.json")
+            with open(path, "r", encoding="utf-8") as f:
+                demo = json.load(f)
+            symbols = demo.get("symbols", ["NOK", "NDA-FI.HE", "FORTUM.HE", "AAPL", "GOOGL"])
+            symbols = list(symbols)[:MAX_ASSETS]
+            mu = np.array(demo["expectedReturns"], dtype=float)
+            sigma = np.array(demo["covariance"], dtype=float)
+            from types import SimpleNamespace
+
+            asset_names = demo.get("assetNames", {})
+            assets = [SimpleNamespace(symbol=s, name=asset_names.get(s, s)) for s in symbols]
+        else:
+            if len(symbols) < MIN_ASSETS:
+                return jsonify({"error": f"Select at least {MIN_ASSETS} assets"}), 400
+            if len(symbols) > MAX_ASSETS:
+                return jsonify({"error": f"Select at most {MAX_ASSETS} assets for fast optimization"}), 400
+
+            risk_factor = max(0.01, min(1.0, risk_factor))
+            symbols = list(symbols)[:MAX_ASSETS]
+
+            # Get expected returns and covariance from historical data
+            mu, sigma = data_fetcher.get_expected_returns_and_covariance(symbols, use_cache=True)
+            assets = data_fetcher.get_assets(symbols)
+
         if budget < 1 or budget >= len(symbols):
             return jsonify({"error": "Budget must be between 1 and (number of assets - 1)"}), 400
 
         risk_factor = max(0.01, min(1.0, risk_factor))
-        symbols = list(symbols)[:MAX_ASSETS]
-
-        # Get expected returns and covariance from historical data
-        mu, sigma = data_fetcher.get_expected_returns_and_covariance(symbols, use_cache=True)
-        assets = data_fetcher.get_assets(symbols)
 
         classical, quantum = optimize(
             mu, sigma, risk_factor, budget, use_quantum=use_quantum, vqe_maxiter=VQE_MAX_ITER
@@ -108,7 +144,7 @@ def api_optimize():
 
         # Build response with asset names for display
         symbol_list = [a.symbol for a in assets]
-        name_by_idx = {i: assets[i].name for i in range(len(assets))}
+        name_by_idx = {i: getattr(assets[i], "name", symbol_list[i]) for i in range(len(assets))}
 
         def result_payload(r: OptimizationResult) -> dict:
             d = r.to_dict()
@@ -204,11 +240,45 @@ def api_backtest():
 def api_risk_return():
     """
     Risk–return data for scatter plot and efficient frontier.
-    Query: symbols=AAPL,GOOGL,... or from last optimization (we need symbols).
-    Returns assets (expectedReturn, volatility), efficient frontier points,
-    and optionally classical/quantum portfolio point (from last run we don't have; frontend can pass).
+    Query: symbols=AAPL,GOOGL,... or useDemoData=true for static demo data.
     """
     try:
+        use_demo = request.args.get("useDemoData", "false").lower() == "true"
+        if use_demo:
+            path = os.path.join(app.static_folder, "demo_data.json")
+            with open(path, "r", encoding="utf-8") as f:
+                demo = json.load(f)
+            symbols = demo.get("symbols", [])
+            mu = np.array(demo["expectedReturns"], dtype=float)
+            sigma = np.array(demo["covariance"], dtype=float)
+            asset_names = demo.get("assetNames", {})
+            n = len(symbols)
+            volatilities = [float(np.sqrt(max(sigma[i, i], 0))) for i in range(n)]
+            returns = [float(mu[i]) for i in range(n)]
+            asset_points = [
+                {"symbol": symbols[i], "name": asset_names.get(symbols[i], symbols[i]), "return": returns[i], "risk": volatilities[i]}
+                for i in range(n)
+            ]
+            import itertools
+            frontier = []
+            for k in range(1, n):
+                for combo in itertools.combinations(range(n), k):
+                    w = 1.0 / k
+                    weights = np.zeros(n)
+                    for i in combo:
+                        weights[i] = w
+                    ret = float(np.dot(weights, mu))
+                    risk = float(np.sqrt(np.dot(weights, np.dot(sigma, weights))))
+                    frontier.append({"return": ret, "risk": risk})
+            frontier.sort(key=lambda p: (p["risk"], -p["return"]))
+            pareto = []
+            best_ret = -1e9
+            for p in frontier:
+                if p["return"] > best_ret:
+                    best_ret = p["return"]
+                    pareto.append(p)
+            return jsonify({"assets": asset_points, "efficientFrontier": pareto})
+
         raw = request.args.get("symbols", "")
         symbols = [s.strip() for s in raw.split(",") if s.strip()] if raw else DEFAULT_SYMBOLS
         symbols = symbols[:MAX_ASSETS + 4]

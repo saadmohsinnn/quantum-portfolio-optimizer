@@ -1,10 +1,10 @@
-# Render Blueprint: Quantum Portfolio Optimizer
+# Render Blueprint: Quantum Playground
 # Deploy at https://dashboard.render.com → New → Blueprint
 # Or connect repo and use "New Web Service" with the same settings below.
 
 services:
   - type: web
-    name: quantum-portfolio-optimizer
+    name: quantum-playground
     env: python
 
     buildCommand: pip install -r requirements.txt
