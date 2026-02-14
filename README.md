@@ -1,4 +1,4 @@
-# Quantum Portfolio Optimizer – Web App
+# Quantumport– Web App
 
 A **free** web application that lets you select stocks, fetch **live market data**, and run a **real quantum optimization** (VQE on Qiskit’s Aer simulator) to suggest an optimal portfolio. No API keys or cloud credits required.
 
