@@ -1,0 +1,21 @@
+# Render Blueprint: Quantum Portfolio Optimizer
+# Deploy at https://dashboard.render.com → New → Blueprint
+# Or connect repo and use "New Web Service" with the same settings below.
+
+services:
+  - type: web
+    name: quantum-portfolio-optimizer
+    env: python
+
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+
+    plan: free
+
+    # Health check so Render knows when the app is ready
+    healthCheckPath: /api/health
+
+    # Optional: uncomment to set Python version explicitly
+    # envVars:
+    #   - key: PYTHON_VERSION
+    #     value: 3.9.18
