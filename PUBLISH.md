@@ -15,10 +15,10 @@ git push -u origin main
 
 - If GitHub asks for a **password**, use a **Personal Access Token** (not your account password). Create one: GitHub → Settings → Developer settings → Personal access tokens → Generate new token (with `repo` scope).
 - Or use **SSH** instead of HTTPS:  
-  `git remote set-url origin git@github.com:saadsmohsin-web/quantum-portfolio-optimizer.git`  
+  `git remote set-url origin git@github.com:saadsmohsin-web/quanport.git`  
   then run `git push -u origin main` again (requires SSH key set up with GitHub).
 
-After this, your repo will be live at: **https://github.com/saadsmohsin-web/quantum-portfolio-optimizer**
+After this, your repo will be live at: **https://github.com/saadsmohsin-web/quanport**
 
 ---
 
@@ -28,13 +28,13 @@ After this, your repo will be live at: **https://github.com/saadsmohsin-web/quan
 
 2. Click **New +** → **Web Service**.
 
-3. Connect the repo **saadsmohsin-web/quantum-portfolio-optimizer** (authorize Render if asked).
+3. Connect the repo **saadsmohsin-web/quanport** (authorize Render if asked).
 
 4. Use these settings:
 
    | Field | Value |
    |--------|--------|
-   | **Name** | `quantum-portfolio-optimizer` (or any name) |
+   | **Name** | `quanport` (or any name) |
    | **Build Command** | `pip install -r requirements.txt` |
    | **Start Command** | `gunicorn app:app --bind 0.0.0.0:$PORT` |
    | **Plan** | **Free** |
@@ -43,7 +43,7 @@ After this, your repo will be live at: **https://github.com/saadsmohsin-web/quan
 
 6. Click **Create Web Service**.
 
-7. Wait for the first deploy (about 5–10 minutes). When status is **Live**, open the URL (e.g. `https://quantum-portfolio-optimizer.onrender.com`).
+7. Wait for the first deploy (about 5–10 minutes). When status is **Live**, open the URL (e.g. `https://quanport.onrender.com`).
 
 8. Verify from your machine:
    ```bash

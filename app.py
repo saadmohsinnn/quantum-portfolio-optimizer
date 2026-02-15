@@ -1,7 +1,7 @@
 """
-Quantum Playground - Flask web application.
-Serves live market data and runs real Qiskit VQE + classical optimization.
-Demo mode uses pre-computed static data when live data is unavailable.
+QuantumPortfolio — Advanced portfolio optimization using quantum computing.
+Flask web application serving live market data with Qiskit VQE optimization.
+Demo mode provides pre-computed results for instant demonstration.
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ def index():
 @app.route("/api/health", methods=["GET"])
 def api_health():
     """Health check for Render and load balancers. Returns 200 when the app is up."""
-    return jsonify({"status": "ok", "service": "quantum-playground"}), 200
+    return jsonify({"status": "ok", "service": "quantumportfolio"}), 200
 
 
 @app.route("/api/demo-data", methods=["GET"])

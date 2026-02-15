@@ -1,4 +1,4 @@
-# Quantum Playground - minimal image for reliable deployment
+# QuanPort — minimal image for reliable deployment
 FROM python:3.11-slim
 
 WORKDIR /app

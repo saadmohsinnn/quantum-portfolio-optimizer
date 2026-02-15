@@ -1,4 +1,4 @@
-# Deploy Quantum Portfolio Optimizer to Render (Free)
+# Deploy QuanPort to Render (Free)
 
 This guide walks you through deploying the app to **Render.com** so you have a live URL to share (e.g. on LinkedIn). No credit card required.
 
@@ -19,7 +19,7 @@ This guide walks you through deploying the app to **Render.com** so you have a l
 ### 2.1 Initialize Git (if not already)
 
 ```bash
-cd /path/to/quantum-portfolio-app
+cd /path/to/quanport
 git init
 ```
 
@@ -35,7 +35,7 @@ git commit -m "Add Render deployment config and health check"
 Create a new repository on GitHub, then:
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/quantum-portfolio-optimizer.git
+git remote add origin https://github.com/YOUR_USERNAME/quanport.git
 git branch -M main
 git push -u origin main
 ```
@@ -56,12 +56,12 @@ git push -u origin main
 ## 4. Create the Web Service
 
 1. In the Render dashboard, click **New +** → **Web Service**.
-2. Connect your **GitHub** account if prompted and select the repository that contains `quantum-portfolio-optimizer` (e.g. `quantum-portfolio-optimizer` or your repo name).
+2. Connect your **GitHub** account if prompted and select the repository that contains `quanport` (e.g. `quanport` or `quantum-portfolio-optimizer`).
 3. Configure the service:
 
 | Field | Value |
 |--------|--------|
-| **Name** | `quantum-portfolio-optimizer` (or any name you like) |
+| **Name** | `quanport` (or any name you like) |
 | **Region** | Choose closest to you (e.g. Oregon, Frankfurt) |
 | **Branch** | `main` |
 | **Runtime** | **Python 3** |
@@ -80,9 +80,9 @@ Render will clone the repo, run the build command, then start the app. With `req
 
 When the deploy status is **Live**, Render shows a URL like:
 
-- `https://quantum-portfolio-optimizer.onrender.com`
+- `https://quanport.onrender.com`
 
-Open it in your browser. You should see the Quantum Portfolio Optimizer UI.
+Open it in your browser. You should see the QuanPort UI.
 
 ---
 
@@ -97,7 +97,7 @@ python verification.py https://YOUR_RENDER_URL
 Example:
 
 ```bash
-python verification.py https://quantum-portfolio-optimizer.onrender.com
+python verification.py https://quanport.onrender.com
 ```
 
 You should see:
@@ -197,4 +197,4 @@ On the **free** plan, the service **spins down after about 15 minutes** of no tr
 - **Cold start** – Open the app once before recording or sharing so the first view is fast.
 - **Hashtags** – e.g. `#QuantumComputing` `#FinTech` `#PortfolioOptimization` `#Qiskit`
 
-You’re done. You now have a free, public deployment of the Quantum Portfolio Optimizer on Render.
+You’re done. You now have a free, public deployment of QuanPort on Render.

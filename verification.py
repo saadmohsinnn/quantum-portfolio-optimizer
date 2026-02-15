@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Post-deployment verification script for Quantum Portfolio Optimizer.
+Post-deployment verification script for QuanPort.
 Run after deploying to Render: python verification.py https://your-app.onrender.com
 """
 
@@ -32,7 +32,7 @@ def test_endpoint(base_url: str, path: str, expected_status: int = 200) -> bool:
 def main():
     if len(sys.argv) < 2:
         print("Usage: python verification.py <BASE_URL>")
-        print("Example: python verification.py https://quantum-portfolio-optimizer.onrender.com")
+        print("Example: python verification.py https://quanport.onrender.com")
         sys.exit(1)
 
     base_url = sys.argv[1]

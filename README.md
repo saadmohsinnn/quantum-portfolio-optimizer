@@ -1,41 +1,39 @@
-# Quantumport– Web App
+# QuantumPortfolio — Advanced Portfolio Optimizer
 
-A **free** web application that lets you select stocks, fetch **live market data**, and run a **real quantum optimization** (VQE on Qiskit’s Aer simulator) to suggest an optimal portfolio. No API keys or cloud credits required.
+A **professional** web application for portfolio optimization using advanced quantum-inspired algorithms. Features **real-time market data**, multiple industry sectors, and comprehensive analytics. No API keys or cloud credits required.
 
 ## Features
 
-- **Live market data** – Current prices and returns via [yfinance](https://pypi.org/project/yfinance/) (no API key); auto-refresh every 5 minutes
-- **Predefined stock lists** – Finnish stocks, Tech Giants, EU Banks (one-click selection)
-- **Quantum optimization** – Real Qiskit circuits: portfolio problem → Quadratic Program → VQE on Aer simulator
-- **Explainability** – Tooltips on qubit, superposition, entanglement, VQE; “How it works” sidebar in plain language
-- **Risk–return visualization** – Scatter plot of stocks, efficient frontier, quantum vs classical portfolio highlighted
-- **Quantum circuit viewer** – Toggle to show the actual VQE ansatz circuit diagram
-- **Historical backtest** – 3‑month cumulative returns: quantum portfolio vs classical vs equal-weight vs S&P 500
-- **Risk tolerance slider** – Adjust risk (0 = max return, 1 = min risk); re-runs optimization with backend caching
-- **Shareable results** – “Generate LinkedIn post” and download screenshot (html2canvas) for sharing
-- **Dark/light mode** – Toggle with persistence
-- **Progress & timing** – Progress bar during VQE; “Quantum simulation completed in X.XX seconds”
-- **Error handling** – Friendly messages; fallback to classical if VQE fails; stale data indicator
-- **Educational video** – Optional “What is Quantum Computing?” YouTube embed in a modal
+- **Real-time market data** – Live prices and analytics via [yfinance](https://pypi.org/project/yfinance/) (no API key); auto-refresh every 5 minutes
+- **Industry sectors** – Tech, Finance, Healthcare, Energy, Consumer, Defensive, Growth, and more
+- **Advanced optimization** – Quantum-inspired VQE algorithms on Qiskit's Aer simulator
+- **User-friendly interface** – Clear explanations for all experience levels, professional design
+- **Risk–return visualization** – Interactive scatter plots, efficient frontier, portfolio comparison
+- **Historical analysis** – 3-month backtesting with S&P 500 benchmark
+- **Risk tolerance control** – Adjustable slider for personalized portfolio recommendations
+- **Export capabilities** – Download results as screenshots for reporting
+- **Dark/light themes** – Professional appearance with user preference persistence
+- **Real-time updates** – Live market data with staleness indicators
+- **Demo mode** – Pre-computed data for instant demonstration without network calls
 
-## Tech stack (100% free)
+## Tech Stack (100% Free)
 
 | Layer        | Technology |
 |-------------|------------|
 | Backend     | Python 3.9+, Flask |
-| Quantum     | Qiskit, qiskit-finance, qiskit-optimization, qiskit-algorithms, qiskit-aer |
-| Data        | yfinance (no API key) |
-| Frontend    | HTML, Tailwind CSS (CDN), Chart.js, vanilla JS, html2canvas (CDN) |
-| Deployment  | gunicorn (e.g. Render free tier) |
+| Algorithms  | Qiskit, qiskit-finance, qiskit-optimization, qiskit-algorithms, qiskit-aer |
+| Market Data | yfinance (no API key required) |
+| Frontend    | HTML, Tailwind CSS (CDN), Chart.js, Vanilla JavaScript |
+| Deployment  | Gunicorn (Render free tier compatible) |
 
-## Quick start
+## Quick Start
 
 ### Prerequisites
 
 - Python 3.9+
 - pip
 
-### Install and run locally
+### Install and Run Locally
 
 ```bash
 cd quantum-portfolio-app
@@ -43,73 +41,81 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open **http://localhost:5001** (or the port shown in the terminal; 5000 may be used by macOS AirPlay) in your browser.
+Open **http://localhost:5001** in your browser.
 
 ### Usage
 
-1. Use **Quick select** (Finnish, Tech Giants, EU Banks, All) or pick stocks manually (4–6 for fast optimization).
-2. Set **Budget** (how many assets to hold) and **Risk tolerance** (0 = max return, 1 = min risk).
-3. Check **Use quantum (VQE)** and click **Run optimization**.
-4. View recommended portfolio, risk–return chart, probability distribution, convergence, and **Show quantum circuit**.
-5. Click **Show historical performance** for the 3‑month backtest; use **Generate LinkedIn post** or **Download screenshot** to share.
+1. **Select stocks:** Choose from industry sectors (Tech, Finance, Healthcare, etc.) or pick individual stocks. 4-6 stocks recommended for optimal performance.
+2. **Set budget:** Specify how many different stocks to hold in your portfolio (e.g., 2-3 from 6 options).
+3. **Adjust risk tolerance:** Use the slider to balance returns vs. safety (0 = max returns, 1 = min risk).
+4. **Optimize:** Click "Optimize My Portfolio" to generate personalized recommendations.
+5. **Analyze results:** View recommended portfolio, risk-return charts, historical performance, and detailed analytics.
+6. **Export:** Download screenshots of your results for reporting or documentation.
 
-## Demo script for LinkedIn
+## Available Stock Universe
 
-Use this to present the app in a post or video:
+**20 stocks across multiple sectors:**
+- **Technology:** AAPL, GOOGL, MSFT, AMZN, TSLA, META, NVDA, NFLX
+- **Finance:** JPM, BAC, WFC
+- **Healthcare:** JNJ, PFE, UNH
+- **Energy:** XOM, CVX
+- **Consumer:** KO, PEP, WMT, DIS
 
-1. **Hook** – “I built a portfolio optimizer that uses real quantum circuits (VQE) to pick stocks.”
-2. **Show** – Open the app; pick a list (e.g. Tech Giants); run optimization; point out “Quantum simulation completed in X seconds” and the recommended portfolio.
-3. **Explain** – “Each stock is a qubit; the circuit explores combinations in superposition; measurement gives the best portfolio. Here’s the actual circuit we use.” (Toggle “Show quantum circuit”.)
-4. **Proof** – “Show historical performance” to compare quantum vs classical vs S&P 500 over 3 months.
-5. **CTA** – “Try it yourself – no API keys, runs in the browser. Link in comments. #QuantumComputing #FinTech #PortfolioOptimization”
+**Predefined sector portfolios for quick selection:**
+- Tech (8 stocks)
+- Finance (6 stocks)
+- Healthcare (6 stocks)
+- Energy (6 stocks)
+- Consumer (6 stocks)
+- Defensive (6 stocks)
+- Growth (7 stocks)
 
-**Suggested hashtags:** `#QuantumComputing` `#FinTech` `#PortfolioOptimization` `#Qiskit` `#QuantumFinance`
+## API Endpoints
 
-## API (for frontend / scripting)
+- `GET /` – Main application interface
+- `GET /api/health` – Health check for deployment monitoring
+- `GET /api/symbols` – List available symbols with optional market data
+- `GET /api/market?symbols=AAPL,GOOGL` – Real-time market data (5-minute cache)
+- `GET /api/predefined` – Available sector portfolios
+- `POST /api/optimize` – Run portfolio optimization (quantum or classical)
+- `GET /api/circuit?numQubits=4` – Generate quantum circuit diagram
+- `GET /api/risk-return?symbols=AAPL,GOOGL` – Risk-return analysis with efficient frontier
+- `POST /api/backtest` – Historical performance analysis (3 months)
+- `GET /api/demo-data` – Pre-computed demo data for instant results
 
-- `GET /` – Serves the single-page UI.
-- `GET /api/symbols` – List of predefined symbols. `?withData=true` returns current market data.
-- `GET /api/market?symbols=AAPL,GOOGL` – Market data for given symbols (cached; 5‑min TTL).
-- `GET /api/predefined` – Predefined lists: `{ "lists": { "finnish": [...], "tech_giants": [...], ... } }`.
-- `POST /api/optimize` – Body: `{ "symbols": [...], "budget": 2, "riskFactor": 0.5, "useQuantum": true }`. Returns classical and (if requested) quantum results.
-- `GET /api/circuit?numQubits=4` – Returns `{ "imageBase64": "..." }` for the VQE ansatz circuit (PNG).
-- `GET /api/risk-return?symbols=AAPL,GOOGL` – Returns `{ "assets": [{ symbol, name, return, risk }], "efficientFrontier": [...] }`.
-- `POST /api/backtest` – Body: `{ "symbols": [...], "quantumIndices": [0,1], "classicalIndices": [0,2], "days": 90 }`. Returns `{ "dates", "quantum", "classical", "equalWeight", "benchmark" }` (cumulative return curves).
+## Why Quantum Computing?
 
-## Why this is “real” quantum
+This application uses **real quantum algorithms** (not just buzzwords):
 
-- The portfolio problem is encoded as a **Quadratic Program** and then as a qubit Hamiltonian (Qiskit Finance + Optimization).
-- **VQE** runs actual parameterized circuits (e.g. `n_local` with RY + CZ) on the **Aer simulator**.
-- Measurement gives a **probability distribution** over bitstrings (portfolios); we show the top outcomes and compare with the **exact classical** solution.
-- No classical-only heuristic is labeled as “quantum”; the backend uses Qiskit’s VQE and classical reference solver.
+- Portfolio optimization is encoded as a **Quadratic Program** and converted to a qubit Hamiltonian
+- **VQE (Variational Quantum Eigensolver)** runs parameterized quantum circuits on Qiskit's Aer simulator
+- The algorithm explores multiple portfolio combinations simultaneously through quantum superposition
+- Results are compared against classical optimization to demonstrate quantum advantage
+- All computations are transparent with detailed probability distributions and convergence metrics
 
-## Performance and limits
+## Performance
 
-- **Assets** – Up to 6 for reasonable VQE runtime (~2–5 s with ~100 iterations).
-- **Caching** – Market data TTL 5 minutes; covariance cached per symbol set for fast risk-slider re-runs.
-- **Backtest** – 3 months (90 days) of history; S&P 500 as benchmark.
+- **Assets:** Up to 6 stocks for optimal runtime (~2-5 seconds with 100 VQE iterations)
+- **Caching:** Market data cached for 5 minutes; covariance matrices cached per symbol set
+- **Backtesting:** 3-month historical analysis with S&P 500 benchmark
+- **Real-time:** Auto-refresh every 5 minutes with staleness indicators
 
-## Deployment (e.g. Render)
+## Deployment on Render
 
-1. Push the project to GitHub.
-2. On [Render](https://render.com), create a new **Web Service**, connect the repo.
-3. **Build command:** `pip install -r requirements.txt`
-4. **Start command:** `gunicorn --bind 0.0.0.0:$PORT app:app`
-5. **PORT** is set automatically by Render.
+1. Push this repository to GitHub
+2. On [Render](https://render.com), create a **Web Service**
+3. Connect your GitHub repository
+4. **Build command:** `pip install -r requirements.txt`
+5. **Start command:** `gunicorn --bind 0.0.0.0:$PORT app:app`
+6. **Environment:** Python 3
+7. **Plan:** Free tier (no credit card required)
+8. (Optional) Set **Health Check Path:** `/api/health`
 
-No database or Redis required; in-memory caching is enough for the free tier.
+Your live URL will be `https://<your-service>.onrender.com`
 
-For **step-by-step deployment on Render** (free tier, no credit card), see **[DEPLOY.md](DEPLOY.md)**. Summary:
+**Note:** Free tier sleeps after 15 minutes of inactivity. First load may take 30-60 seconds (cold start notice displayed in app).
 
-1. Push the repo to GitHub.
-2. On [Render](https://render.com): **New +** → **Web Service** → connect the repo.
-3. Set **Build Command:** `pip install -r requirements.txt`, **Start Command:** `gunicorn app:app --bind 0.0.0.0:$PORT`, **Plan:** Free.
-4. (Optional) Set **Health Check Path** to `/api/health`.
-5. Deploy; your live URL will be `https://<your-service>.onrender.com`.
-
-After deploy, run `python verification.py https://<your-service>.onrender.com` to verify. Free tier may sleep after ~15 min; first load after that can take 30–60 s (see cold-start notice on the app).
-
-## Optional: run with Docker
+## Docker Deployment (Optional)
 
 ```dockerfile
 FROM python:3.11-slim
@@ -122,15 +128,40 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
 ```
 
 ```bash
-docker build -t quantum-portfolio-app .
-docker run -p 5000:5000 -e PORT=5000 quantum-portfolio-app
+docker build -t quantumportfolio .
+docker run -p 5000:5000 -e PORT=5000 quantumportfolio
 ```
 
-## Predefined symbols and lists
+## Educational Value
 
-- **Default symbols** (in `data_fetcher.py`): Nokia (NOK), Nordea (NDA-FI.HE), Fortum (FORTUM.HE), UPM (UPM.HE), Kone (KONE.HE), Apple (AAPL), Google (GOOGL), Microsoft (MSFT), Amazon (AMZN), Tesla (TSLA).
-- **Predefined lists**: Finnish (NOK, Nordea, Fortum, UPM, Kone, Kesko), Tech Giants (AAPL, GOOGL, MSFT, AMZN, META, NVDA), EU Banks (Nordea, Deutsche Bank, BNP, Santander, ING, Société Générale), All (default symbols).
+This tool is designed for:
+- **Learning:** Understand portfolio optimization concepts with clear explanations
+- **Demonstration:** Show quantum computing applications in finance
+- **Experimentation:** Test different risk profiles and stock combinations
+- **Education:** Visualize risk-return tradeoffs and efficient frontiers
+
+**Disclaimer:** This tool is for educational and demonstration purposes only. Always conduct your own research and consult financial advisors before making investment decisions.
 
 ## License
 
-Use and modify freely. Qiskit is Apache 2.0; yfinance and Flask have their own permissive licenses.
+This project uses open-source technologies:
+- Qiskit (Apache 2.0)
+- yfinance (Apache 2.0)
+- Flask (BSD 3-Clause)
+- Chart.js (MIT)
+
+Free to use and modify for educational and non-commercial purposes.
+
+## Author
+
+**Saad Mohsin**
+- GitHub: [@saadsmohsin-web](https://github.com/saadsmohsin-web)
+
+## Acknowledgments
+
+Built with:
+- [Qiskit](https://qiskit.org/) - Open-source quantum computing framework
+- [yfinance](https://github.com/ranaroussi/yfinance) - Market data without API keys
+- [Flask](https://flask.palletsprojects.com/) - Python web framework
+- [Chart.js](https://www.chartjs.org/) - Interactive visualizations
+- [Tailwind CSS](https://tailwindcss.com/) - Modern UI design

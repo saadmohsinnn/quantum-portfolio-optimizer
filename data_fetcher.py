@@ -15,25 +15,39 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-# Predefined stocks: Finnish + global (tickers that work with yfinance)
+# Comprehensive stock universe across multiple sectors and geographies
 DEFAULT_SYMBOLS = [
-    "NOK",       # Nokia
-    "NDA-FI.HE", # Nordea (Helsinki)
-    "FORTUM.HE", # Fortum
-    "UPM.HE",    # UPM
-    "KONE.HE",   # Kone
     "AAPL",      # Apple
     "GOOGL",     # Google
     "MSFT",      # Microsoft
     "AMZN",      # Amazon
     "TSLA",      # Tesla
+    "META",      # Meta
+    "NVDA",      # NVIDIA
+    "JPM",       # JPMorgan Chase
+    "BAC",       # Bank of America
+    "WFC",       # Wells Fargo
+    "JNJ",       # Johnson & Johnson
+    "PFE",       # Pfizer
+    "UNH",       # UnitedHealth
+    "XOM",       # Exxon Mobil
+    "CVX",       # Chevron
+    "KO",        # Coca-Cola
+    "PEP",       # PepsiCo
+    "WMT",       # Walmart
+    "DIS",       # Disney
+    "NFLX",      # Netflix
 ]
 
 # Predefined stock lists for quick selection (id -> list of symbols)
 PREDEFINED_LISTS: dict[str, list[str]] = {
-    "finnish": ["NOK", "NDA-FI.HE", "FORTUM.HE", "UPM.HE", "KONE.HE", "KESKOB.HE"],
-    "tech_giants": ["AAPL", "GOOGL", "MSFT", "AMZN", "META", "NVDA"],
-    "eu_banks": ["NDA-FI.HE", "DBK.DE", "BNP.PA", "SAN.MC", "INGA.AS", "GLE.PA"],
+    "tech": ["AAPL", "GOOGL", "MSFT", "AMZN", "META", "NVDA", "TSLA", "NFLX"],
+    "finance": ["JPM", "BAC", "WFC", "GS", "MS", "C"],
+    "healthcare": ["JNJ", "PFE", "UNH", "ABBV", "MRK", "LLY"],
+    "energy": ["XOM", "CVX", "COP", "SLB", "EOG", "PXD"],
+    "consumer": ["KO", "PEP", "WMT", "PG", "COST", "HD"],
+    "defensive": ["JNJ", "PG", "KO", "WMT", "MCD", "VZ"],
+    "growth": ["NVDA", "TSLA", "META", "AMZN", "NFLX", "AMD"],
     "all": DEFAULT_SYMBOLS,
 }
 

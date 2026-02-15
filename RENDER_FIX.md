@@ -5,7 +5,7 @@ The app now uses a **pure NumPy optimizer** that doesn't require Qiskit. This fi
 ## 1. Update Build Command in Render Dashboard
 
 1. Go to [dashboard.render.com](https://dashboard.render.com)
-2. Select your **quantum-playground** (or quantum-portfolio-optimizer) service
+2. Select your **quanport** (or quantum-portfolio-optimizer) service
 3. Go to **Settings** → **Build & Deploy**
 4. Set **Build Command** to:
    ```

@@ -1,6 +1,6 @@
 /**
- * Quantum Playground - Frontend.
- * Demo mode, Learn More, Hall of Fame, theme (dark default), explainability, backtest, share.
+ * QuantumPortfolio — Advanced Portfolio Optimizer. Frontend application.
+ * Real-time market data, advanced algorithms, professional analytics.
  */
 
 const API = {
@@ -24,16 +24,16 @@ const API = {
   },
 };
 
-// Tooltips for quantum terms (plain language)
+// Tooltips for technical terms (user-friendly language)
 const TOOLTIPS = {
   qubit:
-    "A qubit is the basic unit of quantum information. Here, each stock is encoded as one qubit: 1 = hold, 0 = don't hold.",
+    "A qubit is the fundamental unit in quantum computing. In this application, each stock is represented as a qubit, where the value indicates whether to hold (1) or not hold (0) that stock.",
   superposition:
-    "Superposition means the quantum circuit can explore many portfolio combinations at once, instead of trying them one by one.",
+    "The algorithm can evaluate multiple portfolio combinations simultaneously, rather than testing them sequentially—a key advantage of quantum computing.",
   entanglement:
-    "Entanglement links qubits so that measuring one affects others. This lets the algorithm capture how stocks move together (correlations).",
-  risk: "Risk factor (q): 0 = maximize return only; 1 = minimize risk (volatility). Values in between trade off return vs risk.",
-  vqe: "VQE (Variational Quantum Eigensolver) is a real quantum algorithm that finds the best portfolio by minimizing a cost function on a quantum computer.",
+    "This property allows the algorithm to understand how stocks are correlated—when one stock's price moves, it can predict how others might move together.",
+  risk: "Risk tolerance: 0 = prioritize maximum returns (higher volatility accepted); 1 = prioritize safety (lower volatility preferred). Balanced investors typically choose 0.3-0.7.",
+  vqe: "VQE (Variational Quantum Eigensolver) is an advanced optimization algorithm that combines quantum and classical computing to find optimal solutions efficiently.",
 };
 
 let marketAssets = [];
@@ -386,7 +386,6 @@ async function runOptimization() {
     lastOptimizeResult = result;
     renderResults(result);
     renderResultsSummary(result);
-    renderHallOfFame();
     updateCircuitImage(symbols.length);
     renderRiskReturnChart(result.symbols || symbols, result);
     setDataTimestamp();
@@ -396,8 +395,8 @@ async function runOptimization() {
     if (timeEl && q) {
       const sec = (q.computationTimeMs / 1000).toFixed(2);
       timeEl.textContent = result.quantum
-        ? "Quantum simulation completed in " + sec + " seconds."
-        : "Classical optimization completed in " + sec + " seconds.";
+        ? "Advanced optimization completed in " + sec + " seconds."
+        : "Standard optimization completed in " + sec + " seconds.";
     }
 
     hide($("backtest-chart-wrap"));
@@ -488,7 +487,7 @@ function renderResults(data) {
   const table = document.createElement("table");
   table.className = "w-full text-sm border-collapse";
   table.innerHTML = `
-    <thead><tr class="border-b border-gray-200 dark:border-gray-600"><th class="text-left py-2 pr-4">Metric</th><th class="text-left py-2 pr-4">Classical</th><th class="text-left py-2">Quantum</th></tr></thead>
+    <thead><tr class="border-b border-gray-200 dark:border-gray-600"><th class="text-left py-2 pr-4">Metric</th><th class="text-left py-2 pr-4">Standard</th><th class="text-left py-2">Advanced</th></tr></thead>
     <tbody>
       <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Selected</td><td class="py-2 pr-4">${c && c.selectedNames ? c.selectedNames.join(", ") : "—"}</td><td class="py-2">${(q.selectedNames || []).join(", ")}</td></tr>
       <tr class="border-b border-gray-100 dark:border-gray-700"><td class="py-2 pr-4">Expected return</td><td class="py-2 pr-4">${c ? (c.expectedReturn * 100).toFixed(2) + "%" : "—"}</td><td class="py-2">${(q.expectedReturn * 100).toFixed(2)}%</td></tr>
@@ -606,9 +605,9 @@ async function renderRiskReturnChart(symbols, result) {
     });
   }
 
-  if (q) {
+  if (datasets.length > 0) {
     datasets.push({
-      label: "Quantum portfolio",
+      label: "Advanced portfolio",
       data: [{ x: q.risk * 100, y: q.expectedReturn * 100 }],
       backgroundColor: "#10b981",
       borderColor: "#059669",
@@ -618,7 +617,7 @@ async function renderRiskReturnChart(symbols, result) {
   }
   if (c && result && result.quantum) {
     datasets.push({
-      label: "Classical portfolio",
+      label: "Standard portfolio",
       data: [{ x: c.risk * 100, y: c.expectedReturn * 100 }],
       backgroundColor: "#f59e0b",
       borderColor: "#d97706",
@@ -673,7 +672,7 @@ function toggleCircuit() {
   const show = container.classList.contains("hidden");
   if (show) container.classList.remove("hidden");
   else container.classList.add("hidden");
-  btn.textContent = show ? "Hide quantum circuit" : "Show quantum circuit";
+  btn.textContent = show ? "Hide circuit diagram" : "Show circuit diagram";
 }
 
 // —— Backtest ——
@@ -708,8 +707,8 @@ async function runBacktest() {
       data: {
         labels: dates,
         datasets: [
-          { label: "Quantum portfolio", data: trim(data.quantum), borderColor: "#10b981", fill: false, tension: 0.1 },
-          { label: "Classical portfolio", data: trim(data.classical), borderColor: "#f59e0b", fill: false, tension: 0.1 },
+          { label: "Advanced portfolio", data: trim(data.quantum), borderColor: "#10b981", fill: false, tension: 0.1 },
+          { label: "Standard portfolio", data: trim(data.classical), borderColor: "#f59e0b", fill: false, tension: 0.1 },
           { label: "Equal weight", data: trim(data.equalWeight), borderColor: "#94a3b8", fill: false, tension: 0.1 },
           { label: "S&P 500", data: trim(data.benchmark), borderColor: "#6366f1", fill: false, tension: 0.1 },
         ],
@@ -729,45 +728,7 @@ async function runBacktest() {
   }
 }
 
-// —— Hall of Fame (static examples) ——
-const HALL_OF_FAME = [
-  { stocks: "Apple + Microsoft", date: "March 2025", desc: "Quantum recommended these with 92% confidence during a market dip." },
-  { stocks: "Nordea + Nokia + Fortum", date: "February 2025", desc: "Finnish portfolio with low correlation—quantum favored diversification." },
-  { stocks: "Google + Apple", date: "January 2025", desc: "Tech duo with strong expected returns; quantum agreed with classical." },
-  { stocks: "Nordea + Fortum", date: "December 2024", desc: "Defensive pick during volatility; VQE converged in 47 iterations." },
-  { stocks: "Apple + Google + Microsoft", date: "November 2024", desc: "Quantum found 88% probability for this triple-tech allocation." },
-];
-
-function renderHallOfFame() {
-  const container = $("hall-of-fame");
-  if (!container) return;
-  container.innerHTML = HALL_OF_FAME.map(
-    (h) => `
-    <div class="rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-600/30 p-3 text-sm">
-      <p class="font-medium text-gray-900 dark:text-white">${escapeHtml(h.stocks)}</p>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${escapeHtml(h.date)}</p>
-      <p class="text-gray-600 dark:text-gray-300 mt-1">${escapeHtml(h.desc)}</p>
-    </div>
-  `
-  ).join("");
-}
-
-// —— LinkedIn & screenshot ——
-function generateLinkedInPost() {
-  if (!lastOptimizeResult) return;
-  const q = lastOptimizeResult.quantum || lastOptimizeResult.classical;
-  const names = (q.selectedNames || q.selectedSymbols || []).join(", ");
-  const confidence = q.probabilityDistribution
-    ? (Math.max(...Object.values(q.probabilityDistribution)) * 100).toFixed(0)
-    : "—";
-  const url = window.location.origin + window.location.pathname || "https://your-app-url.com";
-  const text = `I just optimized a portfolio using real quantum computing! The algorithm recommended buying ${names} with ${confidence}% confidence. Check out the live app: ${url} #QuantumComputing #FinTech #PortfolioOptimization`;
-  const ta = $("linkedin-text");
-  const out = $("linkedin-output");
-  if (ta) ta.value = text;
-  if (out) show(out);
-}
-
+// —— Screenshot ——
 function downloadScreenshot() {
   if (typeof html2canvas === "undefined") {
     showError("Screenshot library not loaded.");
@@ -777,7 +738,7 @@ function downloadScreenshot() {
   if (!results) return;
   html2canvas(results, { scale: 2, useCORS: true }).then((canvas) => {
     const a = document.createElement("a");
-    a.download = "quantum-playground-results.png";
+    a.download = "quantumportfolio-results.png";
     a.href = canvas.toDataURL("image/png");
     a.click();
   });
@@ -788,7 +749,7 @@ function openVideoModal() {
   const modal = $("video-modal");
   const iframe = $("video-iframe");
   if (modal && iframe) {
-    iframe.src = "https://www.youtube.com/embed/QuR969uMICM?autoplay=1";
+    iframe.src = "https://www.youtube.com/embed/jHoEjvuPoB8?autoplay=1";
     modal.classList.remove("hidden");
   }
 }
@@ -864,11 +825,9 @@ function init() {
 
   $("circuit-toggle").addEventListener("click", toggleCircuit);
   $("backtest-btn").addEventListener("click", runBacktest);
-  $("linkedin-btn").addEventListener("click", generateLinkedInPost);
   $("screenshot-btn").addEventListener("click", downloadScreenshot);
 
   if (!demoMode) fetchMarket();
-  renderHallOfFame();
   updateRiskLabel();
 }
 

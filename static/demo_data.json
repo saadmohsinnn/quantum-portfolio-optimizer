@@ -1,27 +1,27 @@
 {
-  "symbols": ["NOK", "NDA-FI.HE", "FORTUM.HE", "AAPL", "GOOGL"],
+  "symbols": ["AAPL", "GOOGL", "MSFT", "JPM", "JNJ"],
   "assetNames": {
-    "NOK": "Nokia",
-    "NDA-FI.HE": "Nordea",
-    "FORTUM.HE": "Fortum",
-    "AAPL": "Apple",
-    "GOOGL": "Google"
+    "AAPL": "Apple Inc.",
+    "GOOGL": "Alphabet Inc.",
+    "MSFT": "Microsoft Corp.",
+    "JPM": "JPMorgan Chase",
+    "JNJ": "Johnson & Johnson"
   },
   "assets": [
-    {"symbol": "NOK", "name": "Nokia", "currentPrice": 4.12, "dayChangePercent": 0.8},
-    {"symbol": "NDA-FI.HE", "name": "Nordea", "currentPrice": 11.85, "dayChangePercent": -0.3},
-    {"symbol": "FORTUM.HE", "name": "Fortum", "currentPrice": 14.20, "dayChangePercent": 1.2},
-    {"symbol": "AAPL", "name": "Apple", "currentPrice": 188.50, "dayChangePercent": 0.5},
-    {"symbol": "GOOGL", "name": "Google", "currentPrice": 142.30, "dayChangePercent": 0.9}
+    {"symbol": "AAPL", "name": "Apple Inc.", "currentPrice": 188.50, "dayChangePercent": 0.5},
+    {"symbol": "GOOGL", "name": "Alphabet Inc.", "currentPrice": 142.30, "dayChangePercent": 0.9},
+    {"symbol": "MSFT", "name": "Microsoft Corp.", "currentPrice": 412.20, "dayChangePercent": 0.7},
+    {"symbol": "JPM", "name": "JPMorgan Chase", "currentPrice": 178.50, "dayChangePercent": -0.2},
+    {"symbol": "JNJ", "name": "Johnson & Johnson", "currentPrice": 158.80, "dayChangePercent": 0.3}
   ],
-  "expectedReturns": [0.08, 0.06, 0.05, 0.12, 0.10],
+  "expectedReturns": [0.12, 0.10, 0.11, 0.08, 0.07],
   "covariance": [
-    [0.0625, 0.012, 0.010, 0.018, 0.020],
-    [0.012, 0.0400, 0.008, 0.014, 0.016],
-    [0.010, 0.008, 0.0324, 0.012, 0.013],
-    [0.018, 0.014, 0.012, 0.0529, 0.028],
-    [0.020, 0.016, 0.013, 0.028, 0.0484]
+    [0.0529, 0.028, 0.025, 0.015, 0.012],
+    [0.028, 0.0484, 0.024, 0.014, 0.011],
+    [0.025, 0.024, 0.0441, 0.013, 0.010],
+    [0.015, 0.014, 0.013, 0.0361, 0.009],
+    [0.012, 0.011, 0.010, 0.009, 0.0289]
   ],
-  "lastUpdated": "2025-02-14",
-  "description": "Pre-computed expected returns and covariance matrix for demo mode. No network calls required."
+  "lastUpdated": "2026-02-15",
+  "description": "Pre-computed expected returns and covariance matrix for demo mode. Represents diversified portfolio across tech, finance, and healthcare sectors."
 }

@@ -1,10 +1,9 @@
-# Render Blueprint: Quantum Playground
-# Uses requirements-light.txt for reliable free-tier deployment (no Qiskit = no OOM).
-# Classical optimization always works. For quantum, switch to requirements.txt and paid plan.
+# Render Blueprint: QuantumPortfolio
+# Uses requirements-light.txt for reliable free-tier deployment.
 
 services:
   - type: web
-    name: quantum-playground
+    name: quantumportfolio
     env: python
 
     buildCommand: pip install -r requirements-light.txt
